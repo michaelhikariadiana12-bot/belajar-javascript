@@ -5,13 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tugas 4 - JavaScript</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Utility class untuk menyembunyikan tahap */
+    .form-step.hidden {
+      display: none !important;
+    }
+    /* Layout tombol navigasi */
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .btn-back {
+      background-color: #6c757d;
+      color: white;
+    }
+    .btn-back:hover {
+      background-color: #5a6268;
+    }
+  </style>
 </head>
 <body>
 
   <div class="container">
     <!-- Header: Foto, Nama, dan NIM -->
     <header class="header">
-      <img src="foto.jpg" alt="Foto Profil" class="profile-img" onerror="this.src='https://via.placeholder.com/110?text=Foto';">
+      <img src="minho.jpeg" alt="Foto Profil" class="profile-img" onerror="this.src='https://via.placeholder.com/110?text=Foto';">
       <div class="header-info">
         <h2>Michael Hikari Adiana</h2>
         <p><strong>NIM:</strong> 245314088</p>
@@ -22,6 +41,7 @@
     <main class="content-box">
       <!-- TAHAP 1: Input Nama & Jumlah Pilihan -->
       <section id="section-step1" class="form-step">
+        <h3>Tahap 1: Data Diri & Jumlah Pilihan</h3>
         <div class="form-group">
           <label for="input-nama">Nama :</label>
           <input type="text" id="input-nama" placeholder="Masukkan Nama Lengkap">
@@ -30,47 +50,63 @@
           <label for="input-jumlah">Jumlah Pilihan :</label>
           <input type="number" id="input-jumlah" min="1" placeholder="Masukkan Jumlah Pilihan (angka)">
         </div>
-        <button type="button" id="btn-step1" class="btn">OK</button>
+        <div class="btn-group">
+          <button type="button" id="btn-step1" class="btn">Lanjut (OK)</button>
+        </div>
         <div id="error-step1" class="error-msg"></div>
       </section>
 
       <!-- TAHAP 2: Input Teks Pilihan Dinamis -->
       <section id="section-step2" class="form-step hidden">
+        <h3>Tahap 2: Input Teks Pilihan</h3>
         <div id="container-inputs-pilihan"></div>
-        <button type="button" id="btn-step2" class="btn">OK</button>
+        <div class="btn-group">
+          <button type="button" class="btn btn-back" onclick="showStep('section-step1')">Kembali</button>
+          <button type="button" id="btn-step2" class="btn">Lanjut (OK)</button>
+        </div>
         <div id="error-step2" class="error-msg"></div>
       </section>
 
-      <!-- TAHAP 3: Pemilihan Opsi (Radio Button / Dropdown) -->
+      <!-- TAHAP 3: Pemilihan Opsi (Radio Button) -->
       <section id="section-step3" class="form-step hidden">
-        <label class="section-title">Pilihan :</label>
+        <h3>Tahap 3: Pilih Salah Satu Opsi</h3>
         <div id="container-opsi-pilihan" class="options-container"></div>
-        <button type="button" id="btn-step3" class="btn">OK</button>
+        <div class="btn-group">
+          <button type="button" class="btn btn-back" onclick="showStep('section-step2')">Kembali</button>
+          <button type="button" id="btn-step3" class="btn">Lanjut (OK)</button>
+        </div>
         <div id="error-step3" class="error-msg"></div>
       </section>
 
       <!-- TAHAP 4: Input Email (Pattern Matching) -->
       <section id="section-step4" class="form-step hidden">
+        <h3>Tahap 4: Konfirmasi Email</h3>
         <div class="form-group">
           <label for="input-email">Email :</label>
           <input type="text" id="input-email" placeholder="nama@domain.com">
         </div>
-        <button type="button" id="btn-step4" class="btn">OK</button>
+        <div class="btn-group">
+          <button type="button" class="btn btn-back" onclick="showStep('section-step3')">Kembali</button>
+          <button type="button" id="btn-step4" class="btn">Submit (OK)</button>
+        </div>
         <div id="error-step4" class="error-msg"></div>
       </section>
 
       <!-- TAHAP 5: Tampilan Hasil Akhir -->
-      <section id="section-result" class="result-box hidden">
-        <h3>Hasil:</h3>
+      <section id="section-result" class="result-box form-step hidden">
+        <h3>Hasil Akhir:</h3>
         <p id="result-text"></p>
-        <button type="button" onclick="location.reload()" class="btn btn-reset">Ulangi</button>
+        <div class="btn-group">
+          <button type="button" class="btn btn-back" onclick="showStep('section-step4')">Edit Email</button>
+          <button type="button" onclick="location.reload()" class="btn btn-reset">Ulangi Dari Awal</button>
+        </div>
       </section>
     </main>
   </div>
 
-  <!-- JavaScript Logika -->
+  <!-- JavaScript Logika Multi-Step dengan Navigasi -->
   <script>
-    // Data State
+    // Data State Global
     let dataApp = {
       nama: "",
       jumlah: 0,
@@ -79,12 +115,22 @@
       email: ""
     };
 
-    // Tombol & Elemen Tahap 1
+    // Fungsi Pembantu untuk Mengganti Layer Sesi
+    function showStep(stepIdToShow) {
+      const allSteps = document.querySelectorAll('.form-step');
+      allSteps.forEach(step => step.classList.add('hidden'));
+      
+      const targetStep = document.getElementById(stepIdToShow);
+      if (targetStep) {
+        targetStep.classList.remove('hidden');
+      }
+    }
+
+    // TAHAP 1
     const inputNama = document.getElementById('input-nama');
     const inputJumlah = document.getElementById('input-jumlah');
     const btnStep1 = document.getElementById('btn-step1');
     const errorStep1 = document.getElementById('error-step1');
-    const sectionStep2 = document.getElementById('section-step2');
     const containerInputsPilihan = document.getElementById('container-inputs-pilihan');
 
     btnStep1.addEventListener('click', () => {
@@ -92,7 +138,6 @@
       const namaVal = inputNama.value.trim();
       const jumlahVal = parseInt(inputJumlah.value, 10);
 
-      // Error Trapping Step 1
       if (!namaVal) {
         errorStep1.textContent = "Error: Nama tidak boleh kosong!";
         inputNama.focus();
@@ -105,32 +150,30 @@
       }
 
       dataApp.nama = namaVal;
-      dataApp.jumlah = jumlahVal;
 
-      // Lock input sebelumnya
-      inputNama.disabled = true;
-      inputJumlah.disabled = true;
-      btnStep1.disabled = true;
-
-      // Generate input teks pilihan
-      containerInputsPilihan.innerHTML = "";
-      for (let i = 1; i <= jumlahVal; i++) {
-        const div = document.createElement('div');
-        div.className = 'form-group';
-        div.innerHTML = `
-          <label for="pilihan-${i}">Pilihan ${i} :</label>
-          <input type="text" id="pilihan-${i}" class="input-item-pilihan" placeholder="Teks Pilihan ${i}">
-        `;
-        containerInputsPilihan.appendChild(div);
+      // Jika jumlah pilihan berubah saat user kembali dan mengedit Tahap 1, buat ulang input
+      if (dataApp.jumlah !== jumlahVal) {
+        dataApp.jumlah = jumlahVal;
+        dataApp.daftarPilihan = []; // Reset pilihan jika jumlah berubah
+        
+        containerInputsPilihan.innerHTML = "";
+        for (let i = 1; i <= jumlahVal; i++) {
+          const div = document.createElement('div');
+          div.className = 'form-group';
+          div.innerHTML = `
+            <label for="pilihan-${i}">Pilihan ${i} :</label>
+            <input type="text" id="pilihan-${i}" class="input-item-pilihan" placeholder="Teks Pilihan ${i}">
+          `;
+          containerInputsPilihan.appendChild(div);
+        }
       }
 
-      sectionStep2.classList.remove('hidden');
+      showStep('section-step2');
     });
 
-    // Tombol & Elemen Tahap 2
+    // TAHAP 2
     const btnStep2 = document.getElementById('btn-step2');
     const errorStep2 = document.getElementById('error-step2');
-    const sectionStep3 = document.getElementById('section-step3');
     const containerOpsiPilihan = document.getElementById('container-opsi-pilihan');
 
     btnStep2.addEventListener('click', () => {
@@ -150,61 +193,51 @@
 
       dataApp.daftarPilihan = arr;
 
-      // Lock input sebelumnya
-      inputs.forEach(inp => inp.disabled = true);
-      btnStep2.disabled = true;
-
-      // Tampilkan pilihan dalam bentuk Radio Button
+      // Generate ulang opsi Radio Button berdasarkan input terbaru
       containerOpsiPilihan.innerHTML = "";
       arr.forEach((item, idx) => {
         const wrapper = document.createElement('div');
         wrapper.className = 'radio-item';
+
+        // Pertahankan status terpilih jika opsi sebelumnya masih cocok
+        const isChecked = (item === dataApp.pilihanTerpilih) ? "checked" : "";
+
         wrapper.innerHTML = `
-          <input type="radio" id="radio-opt-${idx}" name="opsiPilihan" value="${item}">
+          <input type="radio" id="radio-opt-${idx}" name="opsiPilihan" value="${item}" ${isChecked}>
           <label for="radio-opt-${idx}">${item}</label>
         `;
         containerOpsiPilihan.appendChild(wrapper);
       });
 
-      sectionStep3.classList.remove('hidden');
+      showStep('section-step3');
     });
 
-    // Tombol & Elemen Tahap 3
+    // TAHAP 3
     const btnStep3 = document.getElementById('btn-step3');
     const errorStep3 = document.getElementById('error-step3');
-    const sectionStep4 = document.getElementById('section-step4');
 
     btnStep3.addEventListener('click', () => {
       errorStep3.textContent = "";
       const selected = document.querySelector('input[name="opsiPilihan"]:checked');
 
-      // Error Trapping Step 3
       if (!selected) {
         errorStep3.textContent = "Error: Silakan pilih salah satu opsi terlebih dahulu!";
         return;
       }
 
       dataApp.pilihanTerpilih = selected.value;
-
-      // Lock radio buttons
-      document.querySelectorAll('input[name="opsiPilihan"]').forEach(radio => radio.disabled = true);
-      btnStep3.disabled = true;
-
-      sectionStep4.classList.remove('hidden');
+      showStep('section-step4');
     });
 
-    // Tombol & Elemen Tahap 4
+    // TAHAP 4
     const inputEmail = document.getElementById('input-email');
     const btnStep4 = document.getElementById('btn-step4');
     const errorStep4 = document.getElementById('error-step4');
-    const sectionResult = document.getElementById('section-result');
     const resultText = document.getElementById('result-text');
 
     btnStep4.addEventListener('click', () => {
       errorStep4.textContent = "";
       const emailVal = inputEmail.value.trim();
-
-      // Error Trapping: Pattern Matching / Regex Email
       const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
       if (!emailVal) {
@@ -221,17 +254,10 @@
 
       dataApp.email = emailVal;
 
-      // Lock email input
-      inputEmail.disabled = true;
-      btnStep4.disabled = true;
-
-      // Format daftar pilihan teks: Pilihan 1, Pilihan 2, ...
       const listPilihanStr = dataApp.daftarPilihan.join(", ");
-
-      // Tampilkan hasil akhir sesuai format tugas
       resultText.textContent = `Hallo, nama saya ${dataApp.nama}, email ${dataApp.email} saya mempunyai sejumlah ${dataApp.jumlah} pilihan yaitu ${listPilihanStr}, dan saya memilih ${dataApp.pilihanTerpilih}`;
 
-      sectionResult.classList.remove('hidden');
+      showStep('section-result');
     });
   </script>
 </body>
