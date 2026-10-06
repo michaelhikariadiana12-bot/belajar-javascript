@@ -1,40 +1,60 @@
-/* Reset Basic & Font */
-* {
-  box-sizing: border-box;
+/* ==========================================
+   1. VIDEO BACKGROUND & DARK OVERLAY
+   ========================================== */
+
+/* Video Background Memenuhi Layar */
+#bg-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -1;
+}
+
+/* 1. Atur Body agar memenuhi layar */
+html, body {
+  width: 100%;
+  height: 100vh;
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden; /* Mencegah scrollbar horizontal muncul */
 }
 
-body {
-  background-color: #000000;
-  color: #333;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 20px;
+/* 2. Video Background */
+#bg-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  filter: brightness(0.45);
+  z-index: 1;
 }
 
-/* Container Utama Card */
+/* 3. Paksa Kontainer ke Tengah Presisi (Horizontal & Vertikal) */
 .container {
-  background-color: #ffffff;
-  width: 100%;
-  max-width: 520px;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Titik acuan tengah presisi */
+  
+  width: 90%;
+  max-width: 680px;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
   overflow: hidden;
+  z-index: 10; /* Memastikan kontainer berada di paling depan */
 }
 
-/* Header Section */
-.header {
-  background: linear-gradient(135deg, #007bff, #0056b3);
-  color: #ffffff;
-  padding: 24px 20px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
+/* ==========================================
+   2. HEADER & LAYOUT ISI FORM
+   ========================================== */
 
 .profile-img {
   width: 75px;
@@ -45,29 +65,53 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* Layout Header */
+.header {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: #ffffff;
+  padding: 24px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.7px; /* Mengurangi jarak antar-elemen (sebelumnya 4px/8px) */
+}
+
 .header-info h2 {
   font-size: 1.25rem;
   font-weight: 600;
-  margin-bottom: 4px;
+  margin: 0;
+  line-height: 0,5; /* Merapatkan spasi tinggi baris */
 }
 
-.header-info p {
+.header-info .nim {
   font-size: 0.9rem;
-  opacity: 0.9;
+  opacity: 0.95;
+  margin: 0;
+  line-height: 0,5;
 }
 
 .header-info .subtitle {
   font-size: 0.8rem;
-  margin-top: 4px;
+  margin-top: 4px; /* Memberi sedikit jarak khusus hanya untuk badge tugas */
+  margin-bottom: 0;
   background-color: rgba(255, 255, 255, 0.2);
   display: inline-block;
   padding: 2px 8px;
   border-radius: 4px;
 }
-
-/* Content Area */
 .content-box {
   padding: 24px 20px;
+}
+
+/* Form Steps */
+.form-step.hidden {
+  display: none !important;
 }
 
 .form-step h3, .result-box h3 {
@@ -78,7 +122,6 @@ body {
   padding-bottom: 8px;
 }
 
-/* Form Groups & Inputs */
 .form-group {
   margin-bottom: 16px;
   display: flex;
@@ -125,11 +168,13 @@ input[type="number"]:focus {
   border: 1px solid #e9ecef;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  background-color: rgba(255, 255, 255, 0.8);
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease;
 }
 
 .radio-item:hover {
   background-color: #f8f9fa;
+  transform: translateX(5px); /* Efek geser kotak opsi saat hover */
 }
 
 .radio-item input[type="radio"] {
@@ -145,7 +190,10 @@ input[type="number"]:focus {
   width: 100%;
 }
 
-/* Tombol & Navigasi */
+/* ==========================================
+   3. TOMBOL & ERRORS
+   ========================================== */
+
 .btn-group {
   display: flex;
   gap: 10px;
@@ -190,7 +238,6 @@ input[type="number"]:focus {
   background-color: #bd2130;
 }
 
-/* Error Message */
 .error-msg {
   color: #dc3545;
   font-size: 0.85rem;
@@ -198,7 +245,6 @@ input[type="number"]:focus {
   font-weight: 500;
 }
 
-/* Result Box */
 .result-box p {
   background-color: #e7f1ff;
   border-left: 4px solid #007bff;
@@ -207,10 +253,18 @@ input[type="number"]:focus {
   line-height: 1.6;
   font-size: 0.95rem;
   color: #1d2124;
+  transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
 }
-/* Efek Bergeser Saat Kursor Diarahkan (Hover Shift) */
 
-/* 1. Judul & Label Form Bergeser ke Kanan */
+.result-box p:hover {
+  transform: translateX(5px);
+  box-shadow: -3px 4px 12px rgba(0, 123, 255, 0.15);
+}
+
+/* ==========================================
+   4. EFEK TEKS BERGESER SAAT HOVER
+   ========================================== */
+
 .form-step h3,
 .result-box h3,
 .form-group label {
@@ -222,10 +276,9 @@ input[type="number"]:focus {
 .result-box h3:hover,
 .form-group label:hover {
   transform: translateX(6px); /* Bergeser 6px ke kanan */
-  color: #007bff; /* Opsional: warna berubah jadi biru */
+  color: #007bff;
 }
 
-/* 2. Informasi Header Bergeser Halus */
 .header-info h2,
 .header-info p {
   display: inline-block;
@@ -234,24 +287,5 @@ input[type="number"]:focus {
 
 .header-info h2:hover,
 .header-info p:hover {
-  transform: translateX(4px); /* Bergeser 4px ke kanan */
-}
-
-/* 3. Opsi Pilihan (Radio Item) Bergeser Sedikit Saat Hover */
-.radio-item {
-  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
-}
-
-.radio-item:hover {
-  transform: translateX(5px); /* Seluruh kotak pilihan bergeser ke kanan */
-}
-
-/* 4. Kotak Hasil Akhir Bergeser */
-.result-box p {
-  transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
-}
-
-.result-box p:hover {
-  transform: translateX(5px);
-  box-shadow: -3px 4px 12px rgba(0, 123, 255, 0.15);
+  transform: translateX(4px);
 }
