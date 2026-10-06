@@ -270,6 +270,36 @@
 
       showStep('section-result');
     });
+    // Tambahkan di baris paling bawah script.js kamu
+document.addEventListener('click', function(e) {
+  const starCount = 6;
+
+  for (let i = 0; i < starCount; i++) {
+    const star = document.createElement('div');
+    star.classList.add('star-effect');
+    star.innerText = '★';
+
+    star.style.left = `${e.clientX}px`;
+    star.style.top = `${e.clientY}px`;
+
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 40 + Math.random() * 40;
+    const x = Math.cos(angle) * distance;
+    const y = Math.sin(angle) * distance;
+
+    star.style.setProperty('--x', `${x}px`);
+    star.style.setProperty('--y', `${y}px`);
+
+    const randomSize = 14 + Math.random() * 12;
+    star.style.fontSize = `${randomSize}px`;
+
+    document.body.appendChild(star);
+
+    setTimeout(() => {
+      star.remove();
+    }, 800);
+  }
+});
   </script>
 </body>
 </html>
