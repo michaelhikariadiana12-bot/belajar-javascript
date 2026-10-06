@@ -1,1 +1,238 @@
-halo
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tugas 4 - JavaScript</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header: Foto, Nama, dan NIM -->
+    <header class="header">
+      <img src="foto.jpg" alt="Foto Profil" class="profile-img" onerror="this.src='https://via.placeholder.com/110?text=Foto';">
+      <div class="header-info">
+        <h2>Michael Hikari Adiana</h2>
+        <p><strong>NIM:</strong> 245314088</p>
+        <p class="subtitle">Tugas 4 - Pemrograman JavaScript</p>
+      </div>
+    </header>
+
+    <main class="content-box">
+      <!-- TAHAP 1: Input Nama & Jumlah Pilihan -->
+      <section id="section-step1" class="form-step">
+        <div class="form-group">
+          <label for="input-nama">Nama :</label>
+          <input type="text" id="input-nama" placeholder="Masukkan Nama Lengkap">
+        </div>
+        <div class="form-group">
+          <label for="input-jumlah">Jumlah Pilihan :</label>
+          <input type="number" id="input-jumlah" min="1" placeholder="Masukkan Jumlah Pilihan (angka)">
+        </div>
+        <button type="button" id="btn-step1" class="btn">OK</button>
+        <div id="error-step1" class="error-msg"></div>
+      </section>
+
+      <!-- TAHAP 2: Input Teks Pilihan Dinamis -->
+      <section id="section-step2" class="form-step hidden">
+        <div id="container-inputs-pilihan"></div>
+        <button type="button" id="btn-step2" class="btn">OK</button>
+        <div id="error-step2" class="error-msg"></div>
+      </section>
+
+      <!-- TAHAP 3: Pemilihan Opsi (Radio Button / Dropdown) -->
+      <section id="section-step3" class="form-step hidden">
+        <label class="section-title">Pilihan :</label>
+        <div id="container-opsi-pilihan" class="options-container"></div>
+        <button type="button" id="btn-step3" class="btn">OK</button>
+        <div id="error-step3" class="error-msg"></div>
+      </section>
+
+      <!-- TAHAP 4: Input Email (Pattern Matching) -->
+      <section id="section-step4" class="form-step hidden">
+        <div class="form-group">
+          <label for="input-email">Email :</label>
+          <input type="text" id="input-email" placeholder="nama@domain.com">
+        </div>
+        <button type="button" id="btn-step4" class="btn">OK</button>
+        <div id="error-step4" class="error-msg"></div>
+      </section>
+
+      <!-- TAHAP 5: Tampilan Hasil Akhir -->
+      <section id="section-result" class="result-box hidden">
+        <h3>Hasil:</h3>
+        <p id="result-text"></p>
+        <button type="button" onclick="location.reload()" class="btn btn-reset">Ulangi</button>
+      </section>
+    </main>
+  </div>
+
+  <!-- JavaScript Logika -->
+  <script>
+    // Data State
+    let dataApp = {
+      nama: "",
+      jumlah: 0,
+      daftarPilihan: [],
+      pilihanTerpilih: "",
+      email: ""
+    };
+
+    // Tombol & Elemen Tahap 1
+    const inputNama = document.getElementById('input-nama');
+    const inputJumlah = document.getElementById('input-jumlah');
+    const btnStep1 = document.getElementById('btn-step1');
+    const errorStep1 = document.getElementById('error-step1');
+    const sectionStep2 = document.getElementById('section-step2');
+    const containerInputsPilihan = document.getElementById('container-inputs-pilihan');
+
+    btnStep1.addEventListener('click', () => {
+      errorStep1.textContent = "";
+      const namaVal = inputNama.value.trim();
+      const jumlahVal = parseInt(inputJumlah.value, 10);
+
+      // Error Trapping Step 1
+      if (!namaVal) {
+        errorStep1.textContent = "Error: Nama tidak boleh kosong!";
+        inputNama.focus();
+        return;
+      }
+      if (isNaN(jumlahVal) || jumlahVal <= 0) {
+        errorStep1.textContent = "Error: Jumlah pilihan harus berupa angka bulat positif (minimal 1)!";
+        inputJumlah.focus();
+        return;
+      }
+
+      dataApp.nama = namaVal;
+      dataApp.jumlah = jumlahVal;
+
+      // Lock input sebelumnya
+      inputNama.disabled = true;
+      inputJumlah.disabled = true;
+      btnStep1.disabled = true;
+
+      // Generate input teks pilihan
+      containerInputsPilihan.innerHTML = "";
+      for (let i = 1; i <= jumlahVal; i++) {
+        const div = document.createElement('div');
+        div.className = 'form-group';
+        div.innerHTML = `
+          <label for="pilihan-${i}">Pilihan ${i} :</label>
+          <input type="text" id="pilihan-${i}" class="input-item-pilihan" placeholder="Teks Pilihan ${i}">
+        `;
+        containerInputsPilihan.appendChild(div);
+      }
+
+      sectionStep2.classList.remove('hidden');
+    });
+
+    // Tombol & Elemen Tahap 2
+    const btnStep2 = document.getElementById('btn-step2');
+    const errorStep2 = document.getElementById('error-step2');
+    const sectionStep3 = document.getElementById('section-step3');
+    const containerOpsiPilihan = document.getElementById('container-opsi-pilihan');
+
+    btnStep2.addEventListener('click', () => {
+      errorStep2.textContent = "";
+      const inputs = document.querySelectorAll('.input-item-pilihan');
+      let arr = [];
+
+      for (let i = 0; i < inputs.length; i++) {
+        const val = inputs[i].value.trim();
+        if (!val) {
+          errorStep2.textContent = `Error: Pilihan ${i + 1} belum diisi! Semua pilihan wajib diisi.`;
+          inputs[i].focus();
+          return;
+        }
+        arr.push(val);
+      }
+
+      dataApp.daftarPilihan = arr;
+
+      // Lock input sebelumnya
+      inputs.forEach(inp => inp.disabled = true);
+      btnStep2.disabled = true;
+
+      // Tampilkan pilihan dalam bentuk Radio Button
+      containerOpsiPilihan.innerHTML = "";
+      arr.forEach((item, idx) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'radio-item';
+        wrapper.innerHTML = `
+          <input type="radio" id="radio-opt-${idx}" name="opsiPilihan" value="${item}">
+          <label for="radio-opt-${idx}">${item}</label>
+        `;
+        containerOpsiPilihan.appendChild(wrapper);
+      });
+
+      sectionStep3.classList.remove('hidden');
+    });
+
+    // Tombol & Elemen Tahap 3
+    const btnStep3 = document.getElementById('btn-step3');
+    const errorStep3 = document.getElementById('error-step3');
+    const sectionStep4 = document.getElementById('section-step4');
+
+    btnStep3.addEventListener('click', () => {
+      errorStep3.textContent = "";
+      const selected = document.querySelector('input[name="opsiPilihan"]:checked');
+
+      // Error Trapping Step 3
+      if (!selected) {
+        errorStep3.textContent = "Error: Silakan pilih salah satu opsi terlebih dahulu!";
+        return;
+      }
+
+      dataApp.pilihanTerpilih = selected.value;
+
+      // Lock radio buttons
+      document.querySelectorAll('input[name="opsiPilihan"]').forEach(radio => radio.disabled = true);
+      btnStep3.disabled = true;
+
+      sectionStep4.classList.remove('hidden');
+    });
+
+    // Tombol & Elemen Tahap 4
+    const inputEmail = document.getElementById('input-email');
+    const btnStep4 = document.getElementById('btn-step4');
+    const errorStep4 = document.getElementById('error-step4');
+    const sectionResult = document.getElementById('section-result');
+    const resultText = document.getElementById('result-text');
+
+    btnStep4.addEventListener('click', () => {
+      errorStep4.textContent = "";
+      const emailVal = inputEmail.value.trim();
+
+      // Error Trapping: Pattern Matching / Regex Email
+      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+      if (!emailVal) {
+        errorStep4.textContent = "Error: Email tidak boleh kosong!";
+        inputEmail.focus();
+        return;
+      }
+
+      if (!emailPattern.test(emailVal)) {
+        errorStep4.textContent = "Error: Format email tidak valid! (Contoh: nama@domain.com)";
+        inputEmail.focus();
+        return;
+      }
+
+      dataApp.email = emailVal;
+
+      // Lock email input
+      inputEmail.disabled = true;
+      btnStep4.disabled = true;
+
+      // Format daftar pilihan teks: Pilihan 1, Pilihan 2, ...
+      const listPilihanStr = dataApp.daftarPilihan.join(", ");
+
+      // Tampilkan hasil akhir sesuai format tugas
+      resultText.textContent = `Hallo, nama saya ${dataApp.nama}, email ${dataApp.email} saya mempunyai sejumlah ${dataApp.jumlah} pilihan yaitu ${listPilihanStr}, dan saya memilih ${dataApp.pilihanTerpilih}`;
+
+      sectionResult.classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>
